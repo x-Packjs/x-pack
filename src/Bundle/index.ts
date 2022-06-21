@@ -3,7 +3,8 @@ import Module from "../Module";
 import fs from "fs";
 import type { Node } from "acorn";
 import { Bundle as MagicStringBundle } from "magic-string";
-import { timeStamp } from "console";
+import path from "path";
+import { AST_TYPE } from "../Constant";
 
 type Options = {
     entry: string;
@@ -35,8 +36,18 @@ class Bundle {
         fs.writeFileSync(outputFileName, code, 'utf-8');
     }
 
-    public fetchModule(modulePath: string) {
-        let route = modulePath;
+    public fetchModule(modulePath: string, currentEnviromentPath?: string) {
+        let route: string;
+        if (!currentEnviromentPath) {
+            route = modulePath;
+        } else {
+            if (path.isAbsolute(modulePath)) {
+                route = modulePath;
+            } else if (modulePath[0] === ".") {
+                route = addSuffix(path.resolve(path.dirname(currentEnviromentPath), modulePath), 'js');
+            }
+        }
+        
         if (route) {
             let sourceCode = fs.readFileSync(route, 'utf-8');
             const module = new Module({
@@ -52,6 +63,9 @@ class Bundle {
         let magicString = new MagicStringBundle();
         this.statements.forEach((statement: any) => {
             const source = statement._source.clone();
+            if (statement.type === AST_TYPE.Export) {
+                source.remove(statement.start, statement.declaration.start);
+            }
             magicString.addSource({
                 content: source,
             });
