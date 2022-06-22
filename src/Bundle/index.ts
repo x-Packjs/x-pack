@@ -16,16 +16,10 @@ class Bundle {
      */
     private entryPath: string;
 
-    /**
-     * 存放所有模块
-     */
-    private modules: { [propName: string]: Module };
-
     private statements: Node[];
 
     constructor(options: Options) {
         this.entryPath = addSuffix(options.entry, 'js');
-        this.modules = {};
     }
 
     public build(outputFileName: string) {

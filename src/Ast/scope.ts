@@ -7,11 +7,6 @@ type Option = {
 
 class Scope {
     /**
-     * 作用域名称
-     */
-    private name: string;
-
-    /**
      * 父级作用域
      */
     public parent: Scope;
@@ -22,7 +17,6 @@ class Scope {
     private names: string[];
 
     constructor(options: Option = {}) {
-        this.name = options.name;
         this.parent = options.parent;
         this.names = options.names || [];
     }
